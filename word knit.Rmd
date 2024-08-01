@@ -1,0 +1,261 @@
+---
+title: "Project on Dataset Analysis"
+author: "Subash Nepal"
+date: "2024-07-24"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+# INTRODUCTION
+This project describes about the comprehensive analysis of the Student Performance Dataset.
+
+# SOURCE
+This dataset was extracted from **Kaggle.com**. 
+**https://www.kaggle.com/datasets/rabieelkharoua/students-performance-dataset**
+
+# About Dataset 
+This dataset contains comprehensive information on 2,392 high school students. This dataset offers a comprehensive view of the factors influencing students' academic performance, making it ideal for educational research, development of predictive models, and statistical analysis.
+
+# Table of COntents 
+**1. Student Information**
+  
+  >. Student ID
+  
+  >. Demographic Details
+    
+  >. Study Habits
+   
+**2. Parental Involvement**
+
+**3. Extracurricular Activities**
+
+**4. Academic Performance**
+
+**5. Target Variable: Grade Class**
+
+# 1. Student Information
+  **> Student ID (1001 to 3392)**
+  
+  **> Demographic Details**
+     
+     *Age(From 15 to 18)*
+     
+     *Gender(0-Male and 1-Female)*
+     
+     *Ethnicity(0-Caucasian, 1-African American, 2-Asian and 3-Other)*
+   
+     *Parental Education(0-None, 1-High School, 3-Bachelors and 4-Higher)*
+     
+  **> Study Habits**
+  
+     *Study Time Weekely (Range from 0-20)*
+     
+     *Absences/Year (Ranging from 0 to 30)*
+     
+     *Tutoring Status (0-No and 1-Yes)*
+     
+# 2. Parental Involvement
+  **> Parental Support**
+      
+      0 - None
+      
+      1 - Low
+      
+      2 - Moderate
+      
+      3 - High
+      
+      4 - Very High
+
+# 3. Extracurricular Activities
+  **> Extracurricular**
+  
+    Participation in ECA (0-NO and 1-YES)
+  
+  **> Sports**
+  
+    Participation in Sports (0-NO and 1-YES)
+  
+  **> Music**
+  
+    Participation in Music Activities (0-NO and 1-YES)
+  
+  **> Volunteering**
+  
+    Participation in Volunteering (0-NO and 1-YES)
+    
+# 4. Academic Performance
+  **> GPA**
+    
+    Grade Point Average on a scale from 2.0 to 4.0, influenced by study habits, parental involvement and ECA.
+    
+# 5. Target Variable: Grade Class
+  **> Grade Class: Classification of students' grades based on GPA**
+  
+    . 0 - 'A' (GPA >= 3.5)
+    
+    . 1 - 'B' (3.0 <= GPA < 3.5)
+    
+    . 1 - 'C' (2.5 <= GPA < 3.0)
+    
+    . 3 - 'D' (2.0 <= GPA < 2.5)
+    
+    . 4 - 'F' (GPA < 2.0)
+    
+  
+# Dataset Loading
+```{r}
+file = read.csv("Student.csv")
+```
+# First Five Values of Dataset
+```{r}
+head(file)
+```
+# Structure of Column of Dataset
+```{r}
+str(file)
+```
+# Cleaning of data
+```{r}
+sum(is.na(file))
+
+sum(is.null(file))
+```
+**Here the *N/A* or *Null* value is no where to be found in the dataset. Hence, we can conclude that the dataset is almost clean.**
+
+# Summary of Dataset
+```{r}
+summary(file)
+```
+
+# Exclusion of Unnecessary Column 
+Here *Tutoring* and *ECA section(Sports, Music and Volunteering)* is not required. So these need to extract these columns from the dataset.
+```{r}
+file = subset(file, select = -c(Tutoring, Extracurricular, Sports, Music, Volunteering))
+View(file)
+head(file)
+```
+
+# Shape of Data
+```{r}
+dim(file)
+```
+
+# Number of Student at Different Age
+```{r}
+table(file$Age)
+```
+Students of different ages:
+
+  15 yrs old = 630
+  
+  16 yrs old = 593
+  
+  17 yrs old = 587
+  
+  18 yrs old = 582
+
+# Number of Males and Females
+```{r}
+table(file$Gender)
+```
+Here the number of Male student is **1170** and Female student is **1222**.
+
+# Number of Males and Females at Different Ages
+```{r}
+attach(file)
+M=file$Age[Gender==0]
+M15= M[M==15]
+length(M15)
+```
+There are 338 Male Students of age 15.
+
+```{r}
+M=file$Age[Gender==0]
+M16= M[M==16]
+length(M16)
+```
+There are 283 Male student of age 16.
+
+```{r}
+M=file$Age[Gender==0]
+M17= M[M==17]
+length(M17)
+```
+There are 272 Male student of age 17.
+```{r}
+M=file$Age[Gender==0]
+M18= M[M==18]
+length(M18)
+```
+There are 277 Male student of age 18.
+
+```{r}
+F=file$Age[Gender==1]
+F15= F[F==15]
+length(F15)
+```
+There are 292 Female student of age 15.
+
+```{r}
+F=file$Age[Gender==1]
+F16= F[F==16]
+length(F16)
+```
+There are 310 Female student of age 16.
+
+```{r}
+F=file$Age[Gender==1]
+F17= F[F==17]
+length(F17)
+```
+There are 315 Female student of age 17.
+```{r}
+F=file$Age[Gender==1]
+F18= F[F==18]
+length(F18)
+```
+There are 305 Female student of age 18.
+
+# Plot of Student on basis of age and gender
+```{r echo=FALSE}
+library(ggplot2)
+data = data.frame(
+  Gender = rep(c("Male", "Female"), each = 4),
+  Age = rep(c(15, 16, 17, 18), times = 2),
+  Count = c(338, 283, 272, 277, 292, 310, 315, 305)
+)
+ggplot(data, aes(x = Age, y = Count, fill = Gender)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Age Distribution by Gender",
+       x = "Age",
+       y = "No. of Students") +
+  theme_minimal()+
+  scale_fill_manual(values = c("Male" = "maroon", "Female" = "skyblue")
+)
+```
+
+This bar graph demonstrates the number of students of a age on the basis of the gender.
+
+```{r}
+
+barplot(file$GPA,file$StudyTimeWeekly,
+        main = "Affect of Study Time in GPA",
+        ylab = "GPA",
+        
+        xlab = "Study Time")
+```
+
+
+
+
+
+```{r}
+file = subset(file, select = -c(Ethnicity))
+```
+
+```{r}
+model1 <- glm(file$GPA~file$StudyTimeWeekly+file$Absences+file$ParentalSupport)
+summary(model)
+```
